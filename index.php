@@ -14,15 +14,22 @@
         }
         </style>
 </head>
+<script src="nerdamer.core.js"></script> <!-- assuming you've saved the file in the root of course -->
+<!-- LOAD MODULES -->
+<script src="Algebra.js"></script>
+<script src="Calculus.js"></script>
+<script src="Solve.js"></script>
+<script src="Extra.js"></script>
 <script>
     function creaTabella() {
         var numero = document.getElementById("numero").value;
         var tabella = document.getElementById("tabella");
-        let cose =    "<table><tr><th>dati</th><th>X(A)</th><th>X(B)</th></tr>";
+        let cose =    "<table><tr><th>dati</th><th>X(A)</th><th>Y(B)</th><th>totale<th></tr>";
         if (numero > 0) {
             for (let i = 0; i < numero; i++) {
-                cose += "<tr><td>dato " + (i+1) + "</td><td><input type='number'></td><td><input type='number'></td></tr>";
+                cose += "<tr><td><input type='text' value='dato " + (i+1) + "'</td><td><input type='number'></td><td><input type='number'></td><td><input type='number'></td></tr>";
             }
+            cose += "<tr><td>Prezzo</td><td><input type='number'></td><td><input type='number'></td><td><input type='number'></td></tr>";
             cose += "</table>";
         tabella.innerHTML = cose;
 
