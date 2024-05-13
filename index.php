@@ -70,9 +70,11 @@
                 rette[i] = a.text();
             }
             //trovo tutte le intersezioni
+            console.log("intersezioni")
             var intersezioni = [];
             for (let i = 0; i < numero; i++) {
                 for (let j = i + 1; j < numero; j++) {
+                    try{
                     var x = nerdamer.solveEquations(rette[i] + "=" + rette[j], "x");
                     //trovo il valore della y
                     var y = nerdamer(rette[i].replace("x", x.toString()));
@@ -83,9 +85,13 @@
                         j: j
                     });
                     console.log(x.toString(), y.toString(), i, j);
+                }catch (e) {
+                    console.log(e);
+                }
                 }
             }
             //trovo le intersezioni con l'asse x
+            console.log("intersezioni con l'asse x")
             for (let i = 0; i < numero; i++) {
                 var x = nerdamer.solveEquations(rette[i] + "=0", "x");
                 var y = 0;
@@ -98,6 +104,7 @@
                 console.log(x.toString(), y.toString(), i, i);
             }
             //trovo le intersezioni con l'asse y
+            console.log("intersezioni con l'asse y")
             for (let i = 0; i < numero; i++) {
                 var x = 0;
                 var y = dati[i].totale / dati[i].y;
@@ -111,48 +118,35 @@
             }
             var tipo = document.querySelector('input[name="tot"]:checked').value;
             var risultati = [];
-            //trovo il "prezzo" di ogni intersezione
+            //trovo il valore della x e della y di ogni intersezione
+            console.log("prezzi")
             for (let i = 0; i < intersezioni.length; i++) {
-                var x = intersezioni[i].x;
-                var y = intersezioni[i].y;
+                var x = eval(intersezioni[i].x);
+                if (x < 0) {
+                    continue;
+                }
+                var y = eval(intersezioni[i].y);
+                if (y < 0) {
+                    continue;
+                }
                 var ii = intersezioni[i].i;
                 var jj = intersezioni[i].j;
-                var prezzo = x * prezzi.x + y * prezzi.y;
+                var prezzo = x*prezzi.x + y*prezzi.y;
+                risultati.push(prezzo);
+                console.log(x,prezzi.x, y, prezzi.y);
                 console.log(prezzo);
-                switch (tipo) {
-                    case "min":
-                        if (
-                            x >= 0 &&
-                            y >= 0 &&
-                            x * dati[ii].x + y * dati[ii].y >= dati[ii].totale &&
-                            x * dati[jj].x + y * dati[jj].y >= dati[jj].totale
-                        ) {
-                            risultati.push(prezzo);
-                        }
-                        break;
-                    case "max":
-                        if (
-                            x >= 0 &&
-                            y >= 0 &&
-                            x * dati[ii].x + y * dati[ii].y <= dati[ii].totale &&
-                            x * dati[jj].x + y * dati[jj].y <= dati[jj].totale
-                        ) {
-                            risultati.push(prezzo);
-                        }
-                        break;
-                }
             }
             console.log(risultati);
-            var risultatto = "";
+            var risultato = "";
             switch (tipo) {
                 case "min":
-                    risultatto = risultati.reduce((a, b) => Math.min(a, b));
+                    risultato = risultati.reduce((a, b) => Math.min(a, b));
                     break;
                 case "max":
-                    risultatto = risultati.reduce((a, b) => Math.max(a, b));
+                    risultato = risultati.reduce((a, b) => Math.max(a, b));
                     break;
             }
-            console.log(risultatto);
+            console.log(risultato);
         }
     </script>
     <body>
