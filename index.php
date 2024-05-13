@@ -28,7 +28,7 @@
             var numero = document.getElementById("numero").value;
             var tabella = document.getElementById("tabella");
             let cose =
-                "<table><tr><th>dati</th><th>X(A)</th><th>Y(B)</th><th>" +
+                "<table><tr><th>dati</th><th><input type='text' value= 'X'></th><th><input type='text' value= 'Y'></th><th>" +
                 "<input type='radio' name='tot' value='min' checked='checked'>min</input><input type='radio' name='tot' value='max'>max</input></th>" +
                 "<th></tr>";
             if (numero > 0) {
@@ -38,10 +38,10 @@
                         i +
                         "''><td><input type='text' value='dato " +
                         (i + 1) +
-                        "'</td><td><input type='number' value=1></td><td><input type='number' value=1></td><td><input type='number' value=10></td></tr>";
+                        "'</td><td><input type='number' value=0></td><td><input type='number' value=0></td><td><input type='number' value=0></td></tr>";
                 }
                 cose +=
-                    "<tr id='prezzi'><td>Prezzo</td><td><input type='number' value=20></td><td><input type='number' value=12.5></td></td></tr>";
+                    "<tr id='prezzi'><td>Prezzo</td><td><input type='number' value=0></td><td><input type='number' value=0></td></td></tr>";
                 cose += "</table>";
                 tabella.innerHTML = cose;
             }
@@ -79,12 +79,12 @@
                     //trovo il valore della y
                     var y = nerdamer(rette[i].replace("x", x.toString()));
                     intersezioni.push({
-                        x: x.toString(),
-                        y: y.toString(),
+                        x: eval(x.toString()),
+                        y: eval(y.toString()),
                         i: i,
                         j: j
                     });
-                    console.log(x.toString(), y.toString(), i, j);
+                    console.log(eval(x.toString()), eval(y.toString()), i, j);
                 }catch (e) {
                     console.log(e);
                 }
@@ -96,12 +96,12 @@
                 var x = nerdamer.solveEquations(rette[i] + "=0", "x");
                 var y = 0;
                 intersezioni.push({
-                    x: x.toString(),
-                    y: y.toString(),
+                    x: eval(x.toString()),
+                    y: eval(y.toString()),
                     i: i,
                     j: i
                 });
-                console.log(x.toString(), y.toString(), i, i);
+                console.log(eval(x.toString()), eval(y.toString()), i, i);
             }
             //trovo le intersezioni con l'asse y
             console.log("intersezioni con l'asse y")
@@ -109,18 +109,20 @@
                 var x = 0;
                 var y = dati[i].totale / dati[i].y;
                 intersezioni.push({
-                    x: x.toString(),
-                    y: y.toString(),
+                    x: eval(x.toString()),
+                    y: eval(y.toString()),
                     i: i,
                     j: i
                 });
-                console.log(x.toString(), y.toString(), i, i);
+                console.log(eval(x.toString()), eval(y.toString()), i, i);
             }
+
             var tipo = document.querySelector('input[name="tot"]:checked').value;
             var risultati = [];
             //trovo il valore della x e della y di ogni intersezione
             console.log("prezzi")
             for (let i = 0; i < intersezioni.length; i++) {
+                console.log(intersezioni[i].x, intersezioni[i].y, intersezioni[i].i, intersezioni[i].j);
                 var x = eval(intersezioni[i].x);
                 if (x < 0) {
                     continue;
@@ -129,24 +131,71 @@
                 if (y < 0) {
                     continue;
                 }
-                var ii = intersezioni[i].i;
-                var jj = intersezioni[i].j;
                 var prezzo = x*prezzi.x + y*prezzi.y;
-                risultati.push(prezzo);
-                console.log(x,prezzi.x, y, prezzi.y);
-                console.log(prezzo);
+                switch(tipo){
+                    case "min":
+                        if(prezzo<0){
+                            continue;
+                        }
+                        //controllo se il è maggiore o appartiene a tutte le rette
+                        for(let j=0;j<numero;j++){
+                            if(Math.round(x*dati[j].x + y*dati[j].y)<dati[j].totale){
+                                console.log("morto a",  x,prezzi.x, y, prezzi.y, dati[j].x, dati[j].y, dati[j].totale, intersezioni[i].i, intersezioni[i].j);
+                                break;
+                            }else{
+                                if(j==numero-1){
+                                    risultati.push({x: x, y: y, prezzo: prezzo});
+                                    console.log(x,prezzi.x, y, prezzi.y);
+                                    console.log(prezzo);
+                                }
+                            }
+                        }
+                        break;
+                    case "max":
+                        if(prezzo<0){
+                            continue;
+                        }
+                        //controllo se il è minore o appartiene a tutte le rette
+                        for(let j=0;j<numero;j++){
+                            if(Math.round(x*dati[j].x + y*dati[j].y)>dati[j].totale){
+                                console.log("morto a",  x,prezzi.x, y, prezzi.y, dati[j].x, dati[j].y, dati[j].totale, intersezioni[i].i, intersezioni[i].j);
+                                break;
+                            }else{
+                                if(j==numero-1){
+                                    risultati.push({x: x,y: y,prezzo: prezzo});
+                                    console.log(x,prezzi.x, y, prezzi.y);
+                                    console.log(prezzo);
+                                }
+                            }
+                        }
+                        break;
+                }
+                
             }
             console.log(risultati);
             var risultato = "";
             switch (tipo) {
                 case "min":
-                    risultato = risultati.reduce((a, b) => Math.min(a, b));
+                    //trovo il prezzo minore
+                    risultato = Math.min.apply(Math, risultati.map(function(o) { return o.prezzo; }))
                     break;
                 case "max":
-                    risultato = risultati.reduce((a, b) => Math.max(a, b));
+                    //trovo il prezzo maggiore
+                    risultato = Math.max.apply(Math, risultati.map(function(o) { return o.prezzo; }))
                     break;
             }
             console.log(risultato);
+            rissultato=document.getElementById("risultato");
+            switch(tipo){
+                case "min":
+                    tipo="minimo";
+                    break;
+                case "max":
+                    tipo="massimo";
+                    break;
+            }
+            rissultato.innerHTML="per ottenere il prezzo "+tipo+" bisogna comprare "+risultati.filter(function(o) { return o.prezzo==risultato; })[0].x+" di X e "+risultati.filter(function(o) { return o.prezzo==risultato; })[0].y+" di Y";
+
         }
     </script>
     <body>
@@ -157,5 +206,6 @@
             <button onclick="calcola()">calcola</button>
         </div>
         <div id="tabella"></div>
+        <div id="risultato"></div>
     </body>
 </html>
