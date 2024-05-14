@@ -195,7 +195,25 @@
                     break;
             }
             rissultato.innerHTML="per ottenere il prezzo "+tipo+" bisogna comprare "+risultati.filter(function(o) { return o.prezzo==risultato; })[0].x+" di X e "+risultati.filter(function(o) { return o.prezzo==risultato; })[0].y+" di Y";
-
+            //disegna il grafico
+            var canvas = document.getElementById("grafico");
+            var ctx = canvas.getContext("2d");
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(0, 400);
+            ctx.lineTo(400, 400);
+            ctx.lineTo(400, 0);
+            ctx.lineTo(0, 0);
+            ctx.stroke();
+            for (let i = 0; i < numero; i++) {
+                ctx.beginPath();
+                ctx.moveTo(0, 400-(dati[i].totale / dati[i].y )* 40);
+                console.log(0,dati[i].totale / dati[i].y * 40);
+                ctx.lineTo(dati[i].totale / dati[i].x * 40, 400);
+                console.log(dati[i].totale / dati[i].x * 40,0);
+                ctx.stroke();
+            }
+            document.body.appendChild(canvas);
         }
     </script>
     <body>
@@ -207,5 +225,8 @@
         </div>
         <div id="tabella"></div>
         <div id="risultato"></div>
+        <div>
+            <canvas id="grafico" width="400" height="400"></canvas>
+        </div>
     </body>
 </html>
